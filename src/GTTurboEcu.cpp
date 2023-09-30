@@ -6,11 +6,10 @@ void toUpperCase(char *str, size_t nBytes) {
     }
 }
 
-GTTurboEcu::GTTurboEcu(uint32_t baudRate, uint8_t rxPin, uint8_t txPin) {
-    _connection = new OBDSerialComm(baudRate, rxPin, txPin);
-    _atProcessor = new ATCommands(_connection);
-    _pidProcessor = new PidProcessor(_connection);
-
+GTTurboEcu::GTTurboEcu(uint32_t baudRate, uint8_t rxPin, uint8_t txPin)
+ : _connection(baudRate, rxPin, txPin)
+ , _atProcessor(&_connection)
+ , _pidProcessor(&_connection) {
     _currCommand[0] = '\0';
     _lastCommand[0] = '\0';
 }
@@ -22,7 +21,7 @@ GTTurboEcu::~GTTurboEcu() {
 ModeWithPID GTTurboEcu::readPidRequest() {
     size_t nBytesRead = 0;
     do {
-        nBytesRead = _connection->readData(_currCommand, MAX_CMD_LENGTH);
+        nBytesRead = _connection.readData(_currCommand, MAX_CMD_LENGTH);
         toUpperCase(_currCommand, nBytesRead);
         // TODO ignore spaces, and all control chars (tab, etc)
         // TODO accept single carriage return as repeat last command at or pid
@@ -35,17 +34,17 @@ ModeWithPID GTTurboEcu::readPidRequest() {
 
 
 bool GTTurboEcu::registerMode01Pid(uint32_t pid) {
-    _pidProcessor->registerMode01Pid(pid);
+    _pidProcessor.registerMode01Pid(pid);
 }
 
 
 void GTTurboEcu::writePidNotSupported() {
-    _connection->writeEndNoData();
+    _connection.writeEndNoData();
 }
 
 
 void GTTurboEcu::writePidResponse(ModeWithPID requestPid, uint8_t numberOfBytes, uint32_t value) {
-    _pidProcessor->writePidResponse(requestPid, numberOfBytes, value);
+    _pidProcessor.writePidResponse(requestPid, numberOfBytes, value);
 }
 
 bool GTTurboEcu::processResponse(StringView command) {
@@ -66,20 +65,20 @@ bool GTTurboEcu::processResponse(StringView command) {
     }
 
     // TODO: check if this is repeated
-    if(_atProcessor->process(command)) {
+    if(_atProcessor.process(command)) {
         strncpy(_lastCommand, command.data(), min(MAX_CMD_LENGTH, command.length()));
         return true;
     }
 
     // check if is valid hex command
     if(!isValidHex(command)) {
-        _connection->writeEndUnknown();
+        _connection.writeEndUnknown();
         command.dbgPrint("Invalid HEX command: ");
         return true;
     }
 
     // TODO: check if this is repeated
-    if(_pidProcessor->process(command)) {
+    if(_pidProcessor.process(command)) {
         strncpy(_lastCommand, command.data(), min(MAX_CMD_LENGTH, command.length()));
         return true;
     }
@@ -104,11 +103,3 @@ bool GTTurboEcu::isValidHex(const StringView &s) {
     return true;
 }
 
-
-/*
-int GTTurboEcu::freeRam() {
-    extern int __heap_start, *__brkval;
-    int v;
-    return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
-}
- */

@@ -11,14 +11,12 @@ class ATCommands {
 public:
     ATCommands(OBDSerialComm *connection);
 
-    ~ATCommands();
-
     bool process(StringView string);
 
 private:
 
     // Variables
-    OBDSerialComm *connection;
+    OBDSerialComm *_connection;
 
     void ATD();
 

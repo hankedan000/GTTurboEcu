@@ -62,8 +62,8 @@ public:
 private:
 
     // Serial parameters
-    SoftwareSerial *serial; // lib to communicate with bluetooth
-    uint32_t boudRate; // Serial Boud Rate
+    SoftwareSerial serial; // lib to communicate with bluetooth
+    uint32_t baudRate; // Serial Boud Rate
 
 
 

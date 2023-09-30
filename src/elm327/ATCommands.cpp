@@ -1,12 +1,8 @@
 #include "ATCommands.h"
 
 
-ATCommands::ATCommands(OBDSerialComm *connection) {
-    this->connection = connection;
-}
-
-ATCommands::~ATCommands() {
-    operator delete(this->connection);
+ATCommands::ATCommands(OBDSerialComm *connection)
+ : _connection(connection) {
 }
 
 
@@ -61,89 +57,89 @@ void ATCommands::processCommand(const StringView & command) {
     } else {
 
         // lets assume we process any at command
-        connection->writeEndOK();
+        _connection->writeEndOK();
     }
 }
 
 // set all to defaults
 void ATCommands::ATD() {
-    connection->setToDefaults();
-    connection->writeTo("BUS INIT: ...");
-    connection->writeEndOK();
+    _connection->setToDefaults();
+    _connection->writeTo("BUS INIT: ...");
+    _connection->writeEndOK();
 
 }
 
 
 // reset all
 void ATCommands::ATZ() {
-    connection->setEcho(true);
-    connection->setStatus(connection->IDLE);
-    connection->writeTo(ID);
-    connection->writeEndOK();
+    _connection->setEcho(true);
+    _connection->setStatus(_connection->IDLE);
+    _connection->writeTo(ID);
+    _connection->writeEndOK();
 }
 
 // Print the version ID
 void ATCommands::ATI() {
-    connection->setStatus(connection->READY);
-    connection->writeTo(ID);
-    connection->writeEndOK();
+    _connection->setStatus(_connection->READY);
+    _connection->writeTo(ID);
+    _connection->writeEndOK();
 }
 
 // send description
 void ATCommands::ATDESC() {
-    connection->writeTo(DESC);
-    connection->writeEndOK();
+    _connection->writeTo(DESC);
+    _connection->writeEndOK();
 }
 
 // set echoEnable 0=off 1=on
 void ATCommands::ATEx(const StringView & cmd) {
-    connection->setEcho(cmd.equals("E0") ? false : true);
-    connection->writeEndOK();
+    _connection->setEcho(cmd.equals("E0") ? false : true);
+    _connection->writeEndOK();
 }
 
 // set memory off=0 on=1
 void ATCommands::ATMx(const StringView & cmd) {
-    connection->setMemory(cmd.equals("M0") ? false : true);
-    connection->writeEndOK();
+    _connection->setMemory(cmd.equals("M0") ? false : true);
+    _connection->writeEndOK();
 }
 
 // line feeds off=0 on=1
 void ATCommands::ATLx(const StringView & cmd) {
-    connection->setLineFeeds(cmd.equals("L0") ? false : true);
-    connection->writeEndOK();
+    _connection->setLineFeeds(cmd.equals("L0") ? false : true);
+    _connection->writeEndOK();
 }
 
 // ATSx printing spaces off=0 on=1
 void ATCommands::ATSx(const StringView & cmd) {
-    connection->setWhiteSpaces(cmd.equals("S0") ? false : true);
-    connection->writeEndOK();
+    _connection->setWhiteSpaces(cmd.equals("S0") ? false : true);
+    _connection->writeEndOK();
 }
 
 // Headers off=0 on=1
 void ATCommands::ATHx(const StringView & cmd) {
-    connection->setHeaders(cmd.equals("H0") ? false : true);
-    connection->writeEndOK();
+    _connection->setHeaders(cmd.equals("H0") ? false : true);
+    _connection->writeEndOK();
 }
 
 // ATSPx Define protocol 0=auto
 void ATCommands::ATSPx(const StringView & cmd) {
-    connection->writeEndOK();
+    _connection->writeEndOK();
 }
 
 // set protocol
 void ATCommands::ATDPN() {
-    connection->writeTo(PROTOCOL);
-    connection->writeEndOK();
+    _connection->writeTo(PROTOCOL);
+    _connection->writeEndOK();
 }
 
 // AT AT2 adaptative time control
 void ATCommands::ATATx(const StringView & cmd) {
-    connection->writeEndOK();
+    _connection->writeEndOK();
 }
 
 // Terminates current diagnostic session. Protocol close
 void ATCommands::ATPC() {
-    connection->writeEndOK();
+    _connection->writeEndOK();
 }
 
 // return true ir connectionand is AT

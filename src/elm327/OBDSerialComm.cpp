@@ -1,16 +1,15 @@
 #include "OBDSerialComm.h"
 
 
-OBDSerialComm::OBDSerialComm(uint32_t baudRate, uint8_t rxPin, uint8_t txPin) {
+OBDSerialComm::OBDSerialComm(uint32_t baudRate, uint8_t rxPin, uint8_t txPin) 
+ : serial(rxPin, txPin) {
     setBaudRate(baudRate);
-    serial = new SoftwareSerial(rxPin, txPin);
-    serial->begin(getBaudRate());
-    serial->setTimeout(SERIAL_READ_TIMEOUT);
+    serial.begin(getBaudRate());
+    serial.setTimeout(SERIAL_READ_TIMEOUT);
     setToDefaults();
 }
 
 OBDSerialComm::~OBDSerialComm() {
-    operator delete(serial);
 }
 
 
@@ -32,7 +31,7 @@ void OBDSerialComm::writeEnd() {
     //    writeTo(0x3E);
     writeTo('>');
 
-    serial->flush();
+    serial.flush();
 };
 
 
@@ -66,12 +65,12 @@ void OBDSerialComm::setToDefaults() {
 }
 
 void OBDSerialComm::writeTo(char const *response) {
-    serial->write(response);
+    serial.write(response);
 }
 
 
 void OBDSerialComm::writeTo(uint8_t cChar) {
-    serial->write(cChar);
+    serial.write(cChar);
 }
 
 void OBDSerialComm::writeEndPidTo(char const *response) {
@@ -87,8 +86,8 @@ void OBDSerialComm::writeEndPidTo(char const *response) {
 }
 
 size_t OBDSerialComm::readData(char *buff, size_t buff_size) {
-    serial->flush(); // temp remove this
-    size_t nbytes = serial->readBytesUntil(SERIAL_END_CHAR, buff, buff_size);
+    serial.flush(); // temp remove this
+    size_t nbytes = serial.readBytesUntil(SERIAL_END_CHAR, buff, buff_size);
     buff[nbytes] = '\0';
     if (isEchoEnable()) {
         writeTo(buff);
@@ -97,11 +96,11 @@ size_t OBDSerialComm::readData(char *buff, size_t buff_size) {
 }
 
 void OBDSerialComm::setBaudRate(uint32_t rate) {
-    this->boudRate = rate;
+    this->baudRate = rate;
 }
 
 long OBDSerialComm::getBaudRate() {
-    return boudRate;
+    return baudRate;
 }
 
 bool OBDSerialComm::isEchoEnable() {

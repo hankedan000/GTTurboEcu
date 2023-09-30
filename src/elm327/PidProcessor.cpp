@@ -5,8 +5,8 @@
 
 #include "PidProcessor.h"
 
-PidProcessor::PidProcessor(OBDSerialComm *connection) {
-    _connection = connection;
+PidProcessor::PidProcessor(OBDSerialComm *connection)
+ : _connection(connection) {
     resetPidMode01Array();
 };
 

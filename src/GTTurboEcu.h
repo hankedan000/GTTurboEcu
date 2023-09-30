@@ -85,11 +85,11 @@ public:
 
 private:
 
-    OBDSerialComm *_connection;
+    OBDSerialComm _connection;
 
-    ATCommands *_atProcessor;
+    ATCommands _atProcessor;
 
-    PidProcessor *_pidProcessor;
+    PidProcessor _pidProcessor;
 
     CmdString _currCommand;
     CmdString _lastCommand;
