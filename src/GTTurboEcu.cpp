@@ -13,7 +13,7 @@ GTTurboEcu::~GTTurboEcu() {
 }
 
 
-String GTTurboEcu::readPidRequest() {
+ModeWithPID GTTurboEcu::readPidRequest() {
     String rxData;
     do {
         rxData = _connection->readData();
@@ -22,7 +22,8 @@ String GTTurboEcu::readPidRequest() {
         // TODO accept single carriage return as repeat last command at or pid
         // ignore null i.e 00
     } while (processResponse(rxData));
-    return rxData;
+    const uint32_t mwpU32 = strtol(rxData.c_str(), NULL, 16);
+    return ModeWithPID(mwpU32);
 }
 
 
@@ -37,7 +38,7 @@ void GTTurboEcu::writePidNotSupported() {
 }
 
 
-void GTTurboEcu::writePidResponse(String requestPid, uint8_t numberOfBytes, uint32_t value) {
+void GTTurboEcu::writePidResponse(ModeWithPID requestPid, uint8_t numberOfBytes, uint32_t value) {
     _pidProcessor->writePidResponse(requestPid, numberOfBytes, value);
 }
 

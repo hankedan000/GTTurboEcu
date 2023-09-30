@@ -37,6 +37,47 @@ const uint8_t maxPid = 0xFF;
 const uint8_t N_MODE01_INTERVALS = 7;
 const uint8_t PID_INTERVAL_OFFSET = 0x20;
 
+using mode_t = uint8_t;
+using pid_t = uint16_t;
 
+// type capable of holding a string with mode and pid formatted in HEX
+using ModeWithPID_HexString = char[7];
+
+struct ModeWithPID {
+    ModeWithPID()
+     : mode(0xFF)
+     , pid(0xFFFF)
+    {}
+
+    ModeWithPID(uint32_t mwp)
+    {
+        if (mwp > (uint32_t)(0xFFFF)) {
+            mode = mwp >> 16;
+            pid = mwp & 0xFFFF;
+        } else {
+            mode = mwp >> 8;
+            pid = mwp & 0xFF;
+        }
+    }
+
+    void toString(ModeWithPID_HexString &out) {
+        if (pid > 0xFFu) {
+            sprintf(out,"%02X%04X",mode,pid);
+        } else {
+            sprintf(out,"%02X%02X",mode,pid&0xFF);
+        }
+    }
+
+    void toRespString(ModeWithPID_HexString &out) {
+        if (pid > 0xFFu) {
+            sprintf(out,"4%X%04X",mode&0xF,pid);
+        } else {
+            sprintf(out,"4%X%02X",mode&0xF,pid&0xFF);
+        }
+    }
+
+    mode_t mode;
+    pid_t pid;
+};
 
 #endif //GTTURBOECU_DEFINITIONS_H

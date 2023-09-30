@@ -21,7 +21,7 @@ public:
 
     bool registerMode01Pid(uint32_t pid);
 
-    void writePidResponse(String requestPid, uint8_t numberOfBytes, uint32_t value);
+    void writePidResponse(ModeWithPID requestPid, uint8_t numberOfBytes, uint32_t value);
 
 private:
 
@@ -42,9 +42,7 @@ private:
 
     uint8_t getPidBitPosition(uint8_t pidcode);
 
-    String convertToPidResponse(String pid);
-
-    void getFormattedResponse(char *response, uint8_t totalNumberOfChars, String pid, uint32_t value);
+    void getFormattedResponse(char *response, uint8_t totalNumberOfChars, ModeWithPID mwp, uint32_t value);
 
     void resetPidMode01Array();
 

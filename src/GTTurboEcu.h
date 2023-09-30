@@ -38,7 +38,7 @@ public:
      *
      * @return the request PID (Vehicle speed ex:  010D )
      */
-    String readPidRequest();
+    ModeWithPID readPidRequest();
 
     /**
      * Registry the PID's (sensors) your arduino will support.
@@ -77,7 +77,7 @@ public:
      *                  lib will convert it to HEX
      *                  with the appropriated number of HEX chars (numberOfChars)
      */
-    void writePidResponse(String requestPid, uint8_t numberOfBytes, uint32_t value);
+    void writePidResponse(ModeWithPID requestPid, uint8_t numberOfBytes, uint32_t value);
 
 private:
 

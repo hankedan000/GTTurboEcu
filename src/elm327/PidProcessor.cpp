@@ -16,17 +16,17 @@ bool PidProcessor::process(String command) {
     if (!isMode01(command))
         return false;
 
-    uint16_t hexCommand = strtoul(command.c_str(), NULL, HEX);
-    uint8_t pid = getPidCodeOnly(hexCommand);
-    if (isSupportedPidRequest(pid)) {
+    uint32_t mwpU32 = strtoul(command.c_str(), NULL, HEX);
+    ModeWithPID mwp(mwpU32);
+    if (isSupportedPidRequest(mwp.pid)) {
         processed = true;
-        uint32_t supportedPids = getSupportedPids(pid);
-        writePidResponse(command, 4, supportedPids);
+        uint32_t supportedPids = getSupportedPids(mwp.pid);
+        writePidResponse(mwp, 4, supportedPids);
     }
     return processed;
 }
 
-void PidProcessor::writePidResponse(String requestPid, uint8_t numberOfBytes, uint32_t value) {
+void PidProcessor::writePidResponse(ModeWithPID requestPid, uint8_t numberOfBytes, uint32_t value) {
     uint8_t  nHexChars = PID_N_BYTES * N_CHARS_IN_BYTE +  numberOfBytes * N_CHARS_IN_BYTE ;
     char responseArray[nHexChars + 1]; // one more for termination char
     getFormattedResponse(responseArray, nHexChars, requestPid, value);
@@ -124,23 +124,22 @@ uint32_t PidProcessor:: getSupportedPids(uint8_t pid) {
     return pidMode01Supported[index];
 }
 
-void PidProcessor::getFormattedResponse(char *response, uint8_t totalNumberOfChars, String pid, uint32_t value) {
+void PidProcessor::getFormattedResponse(char *response, uint8_t totalNumberOfChars, ModeWithPID mwp, uint32_t value) {
     uint8_t nValueChars = totalNumberOfChars - PID_N_BYTES * N_CHARS_IN_BYTE;
-    char cValue[2 + 1];
-    itoa(nValueChars, cValue, DEC);
-    String mask = "%s%0";
-    mask.concat(cValue);
-    mask.concat("lX\0");
-    String pidResponse = convertToPidResponse(pid);
-    sprintf(response, mask.c_str(), pidResponse.c_str(), value);
+    char fmtStr[16];
+    sprintf(fmtStr,"%%s%%0%dlX",nValueChars);
+    ModeWithPID_HexString mwpRespStr;
+    mwp.toRespString(mwpRespStr);
+    sprintf(response, fmtStr, mwpRespStr, value);
 
-    DEBUG("RX PID: " + pid + " - TX: " + String(response));
-}
-
-String PidProcessor::convertToPidResponse(String pid) {
-    String x = "4";
-    x.concat(pid.substring(1, pid.length()));
-    return x;
+#if DO_DEBUG
+    Serial.print("RX PID: ");
+    ModeWithPID_HexString mwpStr;
+    mwp.toString(mwpStr);
+    Serial.print(mwpStr);
+    Serial.print(" - TX: ");
+    Serial.println(response);
+#endif
 }
 
 void PidProcessor::resetPidMode01Array() {

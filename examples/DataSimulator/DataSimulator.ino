@@ -61,7 +61,7 @@ void loop() {
      *
      * GTTurboEcu receives Pid Request
      */
-    String pidRequest = gtTurboEcu.readPidRequest();
+    ModeWithPID pidRequest = gtTurboEcu.readPidRequest();
 
 
     /**
@@ -71,12 +71,10 @@ void loop() {
      * and send a response containing the sensor value
      */
 
-
-
     /**
      * 0105 Engine coolant temperature
     */
-    if (pidRequest.equalsIgnoreCase("0105")) {
+    if (pidRequest.mode == 0x01 && pidRequest.pid == 0x05) {
 
         uint8_t numberOfBytes = 1;
         uint32_t sensorValue = FakeSensorValueProvider();
@@ -94,7 +92,7 @@ void loop() {
     /**
      * 010B intake manifold abs pressure
      */
-    if (pidRequest.equalsIgnoreCase("010B")) {
+    if (pidRequest.mode == 0x01 && pidRequest.pid == 0x0B) {
         gtTurboEcu.writePidResponse(pidRequest, 1, FakeSensorValueProvider());
         return;
     }
@@ -102,7 +100,7 @@ void loop() {
     /**
      * 010C engine rpm
      */
-    if (pidRequest.equalsIgnoreCase("010C")) {
+    if (pidRequest.mode == 0x01 && pidRequest.pid == 0x0C) {
         uint16_t rpmValue = FakeSensorValueProvider() * 100;
 
         // Note: this time the PID value has two bytes
@@ -113,7 +111,7 @@ void loop() {
     /**
      * 0D Vehicle speed
      */
-    if (pidRequest.equalsIgnoreCase("010D")) {
+    if (pidRequest.mode == 0x01 && pidRequest.pid == 0x0D) {
         gtTurboEcu.writePidResponse(pidRequest, 1, FakeSensorValueProvider());
         return;
     }
@@ -121,7 +119,7 @@ void loop() {
     /**
      * 33 Absolute Barometric Pressure
      */
-    if (pidRequest.equalsIgnoreCase("0133")) {
+    if (pidRequest.mode == 0x01 && pidRequest.pid == 0x33) {
         gtTurboEcu.writePidResponse(pidRequest, 1, FakeSensorValueProvider());
         return;
     }
@@ -129,7 +127,7 @@ void loop() {
     /**
      * 0146 Ambient air temperature
      */
-    if (pidRequest.equalsIgnoreCase("0146")) {
+    if (pidRequest.mode == 0x01 && pidRequest.pid == 0x46) {
         gtTurboEcu.writePidResponse(pidRequest, 1, FakeSensorValueProvider());
         return;
     }
@@ -137,15 +135,15 @@ void loop() {
     /**
      * 015C Engine oil temperature
      */
-    if (pidRequest.equalsIgnoreCase("015C")) {
+    if (pidRequest.mode == 0x01 && pidRequest.pid == 0x5C) {
         gtTurboEcu.writePidResponse(pidRequest, 1, FakeSensorValueProvider());
         return;
     }
 
     /**
-     * 015C Engine oil temperature
+     * 0170 Boost pressure control
      */
-    else if (pidRequest.equalsIgnoreCase("0170")) {
+    if (pidRequest.mode == 0x01 && pidRequest.pid == 0x70) {
         gtTurboEcu.writePidResponse(pidRequest, 9, FakeSensorValueProvider());
         return;
     }
