@@ -10,17 +10,17 @@ ATCommands::~ATCommands() {
 }
 
 
-bool ATCommands::process(String command) {
+bool ATCommands::process(StringView command) {
     bool processed = false;
     if (isATCommand(command)) {
-        processed = true;
+        command.dbgPrint("RX AT: ");
         processCommand(command);
-        DEBUG("RX AT: " + command);
+        processed = true;
     }
     return processed;
 }
 
-void ATCommands::processCommand(String command) {
+void ATCommands::processCommand(const StringView & command) {
 
     // if space is enabled (ex: AT H[charPosition])
     uint8_t offset = 2;
@@ -29,7 +29,7 @@ void ATCommands::processCommand(String command) {
     }
 
     // refer to ELM327 specs
-    String specificCommand = command.substring(offset, command.length());
+    StringView specificCommand = command.substring(offset, command.length() - 1);
     if (specificCommand.startsWith("D",offset)) {
         ATCommands::ATD();
     } else if (specificCommand.startsWith("Z")) {
@@ -96,37 +96,37 @@ void ATCommands::ATDESC() {
 }
 
 // set echoEnable 0=off 1=on
-void ATCommands::ATEx(String cmd) {
+void ATCommands::ATEx(const StringView & cmd) {
     connection->setEcho(cmd.equals("E0") ? false : true);
     connection->writeEndOK();
 }
 
 // set memory off=0 on=1
-void ATCommands::ATMx(String cmd) {
+void ATCommands::ATMx(const StringView & cmd) {
     connection->setMemory(cmd.equals("M0") ? false : true);
     connection->writeEndOK();
 }
 
 // line feeds off=0 on=1
-void ATCommands::ATLx(String cmd) {
+void ATCommands::ATLx(const StringView & cmd) {
     connection->setLineFeeds(cmd.equals("L0") ? false : true);
     connection->writeEndOK();
 }
 
 // ATSx printing spaces off=0 on=1
-void ATCommands::ATSx(String cmd) {
+void ATCommands::ATSx(const StringView & cmd) {
     connection->setWhiteSpaces(cmd.equals("S0") ? false : true);
     connection->writeEndOK();
 }
 
 // Headers off=0 on=1
-void ATCommands::ATHx(String cmd) {
+void ATCommands::ATHx(const StringView & cmd) {
     connection->setHeaders(cmd.equals("H0") ? false : true);
     connection->writeEndOK();
 }
 
 // ATSPx Define protocol 0=auto
-void ATCommands::ATSPx(String cmd) {
+void ATCommands::ATSPx(const StringView & cmd) {
     connection->writeEndOK();
 }
 
@@ -137,7 +137,7 @@ void ATCommands::ATDPN() {
 }
 
 // AT AT2 adaptative time control
-void ATCommands::ATATx(String cmd) {
+void ATCommands::ATATx(const StringView & cmd) {
     connection->writeEndOK();
 }
 
@@ -147,8 +147,7 @@ void ATCommands::ATPC() {
 }
 
 // return true ir connectionand is AT
-bool ATCommands::isATCommand(String command) {
-    toUpperCase(command.charAt(0));
+bool ATCommands::isATCommand(const StringView & command) {
     return command.startsWith("AT") ? true : false;
 }
 

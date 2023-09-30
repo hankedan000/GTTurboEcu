@@ -86,13 +86,14 @@ void OBDSerialComm::writeEndPidTo(char const *response) {
     writeEnd();
 }
 
-String OBDSerialComm::readData() {
+size_t OBDSerialComm::readData(char *buff, size_t buff_size) {
     serial->flush(); // temp remove this
-    String rxData = serial->readStringUntil(SERIAL_END_CHAR);
+    size_t nbytes = serial->readBytesUntil(SERIAL_END_CHAR, buff, buff_size);
+    buff[nbytes] = '\0';
     if (isEchoEnable()) {
-        writeTo(rxData.c_str());
+        writeTo(buff);
     }
-    return rxData;
+    return nbytes;
 }
 
 void OBDSerialComm::setBaudRate(uint32_t rate) {

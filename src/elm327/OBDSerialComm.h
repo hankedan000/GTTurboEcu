@@ -35,7 +35,7 @@ public:
 
     void setToDefaults();
 
-    String readData();
+    size_t readData(char *buff, size_t buff_size);
 
     void writeTo(uint8_t cChar);
 

@@ -6,6 +6,10 @@
 #include "elm327/OBDSerialComm.h"
 #include "elm327/ATCommands.h"
 #include "elm327/PidProcessor.h"
+#include "elm327/StringView.h"
+
+#define MAX_CMD_LENGTH 64
+using CmdString = char[MAX_CMD_LENGTH];
 
 class GTTurboEcu {
 
@@ -87,11 +91,12 @@ private:
 
     PidProcessor *_pidProcessor;
 
-    String _lastCommand;
+    CmdString _currCommand;
+    CmdString _lastCommand;
 
-    bool processResponse(String command);
+    bool processResponse(StringView command);
 
-    bool isValidHex(const char *pid);
+    bool isValidHex(const StringView &s);
 };
 
 #endif
