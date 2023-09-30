@@ -5,18 +5,18 @@
 
 #include "PidProcessor.h"
 
-PidProcessor::PidProcessor(OBDSerialComm *connection) {
-    _connection = connection;
+PidProcessor::PidProcessor(OBDSerialComm *connection)
+ : _connection(connection) {
     resetPidMode01Array();
 };
 
-bool PidProcessor::process(String command) {
+bool PidProcessor::process(StringView command) {
     bool processed = false;
 
     if (!isMode01(command))
         return false;
 
-    uint32_t mwpU32 = strtoul(command.c_str(), NULL, HEX);
+    uint32_t mwpU32 = strtoul(command.data(), NULL, HEX);
     ModeWithPID mwp(mwpU32);
     if (isSupportedPidRequest(mwp.pid)) {
         processed = true;
@@ -45,13 +45,13 @@ bool PidProcessor::registerMode01Pid(uint32_t pid) {
 
         char buffer[4];
         sprintf(buffer, "%02X", pid);
-        DEBUG("Registered PID: " + String(buffer ));
+        StringView(buffer ).dbgPrint("Registered PID: ");
         return true;
     }
     return false;
 }
 
-bool PidProcessor::isMode01(String command) {
+bool PidProcessor::isMode01(StringView command) {
     return command.startsWith("01") ? true : false;
 }
 

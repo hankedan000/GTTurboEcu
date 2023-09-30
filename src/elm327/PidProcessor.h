@@ -10,6 +10,7 @@
 #include <Print.h>
 #include "definitions.h"
 #include "OBDSerialComm.h"
+#include "StringView.h"
 
 class PidProcessor {
 
@@ -17,7 +18,7 @@ public:
 
     PidProcessor(OBDSerialComm *connection);
 
-    bool process(String string);
+    bool process(StringView string);
 
     bool registerMode01Pid(uint32_t pid);
 
@@ -32,7 +33,7 @@ private:
 
     uint32_t getSupportedPids(uint8_t pidcode);
 
-    bool isMode01(String command);
+    bool isMode01(StringView command);
 
     uint8_t getPidIntervalId(uint8_t pidcode);
 

@@ -35,7 +35,7 @@ public:
 
     void setToDefaults();
 
-    String readData();
+    size_t readData(char *buff, size_t buff_size);
 
     void writeTo(uint8_t cChar);
 
@@ -62,8 +62,8 @@ public:
 private:
 
     // Serial parameters
-    SoftwareSerial *serial; // lib to communicate with bluetooth
-    uint32_t boudRate; // Serial Boud Rate
+    SoftwareSerial serial; // lib to communicate with bluetooth
+    uint32_t baudRate; // Serial Boud Rate
 
 
 

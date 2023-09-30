@@ -4,20 +4,19 @@
 
 #include <Arduino.h>
 #include "OBDSerialComm.h"
+#include "StringView.h"
 
 class ATCommands {
 
 public:
     ATCommands(OBDSerialComm *connection);
 
-    ~ATCommands();
-
-    bool process(String string);
+    bool process(StringView string);
 
 private:
 
     // Variables
-    OBDSerialComm *connection;
+    OBDSerialComm *_connection;
 
     void ATD();
 
@@ -25,19 +24,19 @@ private:
 
     void ATI();
 
-    void ATEx(String x);
+    void ATEx(const StringView &x);
 
-    void ATMx(String x);
+    void ATMx(const StringView & x);
 
-    void ATLx(String x);
+    void ATLx(const StringView & x);
 
-    void ATSx(String x);
+    void ATSx(const StringView & x);
 
-    void ATHx(String x);
+    void ATHx(const StringView & x);
 
-    void ATSPx(String x);
+    void ATSPx(const StringView & x);
 
-    void ATATx(String cmd);
+    void ATATx(const StringView & cmd);
 
     void ATPC();
 
@@ -45,9 +44,9 @@ private:
 
     void ATDESC();
 
-    void processCommand(String command);
+    void processCommand(const StringView & command);
 
-    bool isATCommand(String command);
+    bool isATCommand(const StringView & command);
 
 };
 
